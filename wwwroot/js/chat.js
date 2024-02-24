@@ -12,6 +12,10 @@ connection.on("SetUserId", function(id){
     currentUserId = id;
 });
 
+connection.on("OpenChat", function (id) {
+    openChat(id);
+});
+
 function openChat(chatId) {
     currentMessageCount = 0;
     contactsArray.forEach(function (contact) {
@@ -131,6 +135,7 @@ connection.on("UpdateMessages", function (messages) {
         senderSpan.textContent = message.item1 + ': ';
 
         var contentSpan = document.createElement('span');
+        contentSpan.classList.add('wiadomosc');
         contentSpan.textContent = message.item2.messageText;
 
         var timestampSpan = document.createElement('span');
@@ -250,6 +255,9 @@ connection.on("UpdateUserList", function (users) {
         // Create userRow for userListTable
         var userRow1 = document.createElement("tr");
         userRow1.setAttribute("data-userid", user.id);
+        userRow1.addEventListener("click", function () {
+            selectUser(user.id);
+        });
 
         var nameCell1 = document.createElement("td");
         nameCell1.textContent = user.name + " " + user.surname;
@@ -344,7 +352,47 @@ function listUsers2() {
 }
 
 function createChat(userId) {
-    //
+    var usersIDArray = [];
+    var checkboxes = document.getElementsByClassName("chatCheckbox");
+
+    // Loop through all checkboxes
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            var userIdValue = parseInt(checkboxes[i].value); // Convert to integer
+            if (!usersIDArray.includes(userIdValue)) {
+                usersIDArray.push(userIdValue);
+            }
+        }
+    }
+
+    // Convert userId to integer
+    userId = parseInt(userId);
+
+    // Add the userId parameter if it's not already in the array
+    if (!usersIDArray.includes(userId)) {
+        usersIDArray.push(userId);
+    }
+
+    // Get the value of the input field
+    var chatName = document.getElementById("chatNamer").value;
+
+    // Check if chatName is empty
+    if (!chatName.trim()) {
+        alert("Please enter a chat name.");
+        return; // Exit the function if chatName is empty
+    }
+
+    // Check if the usersIDArray contains at least two elements
+    if (usersIDArray.length < 2) {
+        alert("Please select at least one user that isnt you to create a chat.");
+        return; // Exit the function if there are fewer than two users
+    }
+
+    // Now usersIDArray contains at least two IDs of checked checkboxes and the userId parameter
+    console.log("User IDs:", usersIDArray);
+    console.log("Chat Name:", chatName);
+
+    connection.invoke("CreateChat", chatName, usersIDArray);
 }
 
 function resizeContainer() {
@@ -355,6 +403,15 @@ function resizeContainer() {
     container.style.height = windowHeight + "px"; // Set container height to window height
     container.style.width = windowWidth + "px";   // Set container width to window width
 }
+
+function selectUser(id) {
+    connection.invoke("SelectUserContact", id, currentUserId);
+}
+
+connection.on("Update", function () {
+    connection.invoke("SendUserData");
+    connection.invoke("SendContactsData");
+});
 
 window.onload = function () {
     resizeContainer;
@@ -377,5 +434,3 @@ window.onunload = function (event) {
 };
 
 window.onresize = resizeContainer;
-
-

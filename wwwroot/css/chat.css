@@ -6,6 +6,10 @@
 }
 
 #userList {
+    display: table;
+}
+
+#searchbox:placeholder-shown + #userList {
     display: none;
 }
 

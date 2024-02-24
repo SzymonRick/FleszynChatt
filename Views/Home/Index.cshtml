@@ -34,6 +34,7 @@
                     <table id="chatCreatorList">
 
                     </table>
+                    <input type="text" id="chatNamer" placeholder="Nazwij Chat...">
                     <button id="createButton" onclick="createChat(@if(Model != null){@Model.UserId})">Create Chat</button>
                 </div>
             </div>
@@ -54,7 +55,7 @@
             </div>
         </div>
     </div>
-    <audio id="alertSound" src="~/audio/alert.mp3"></audio>
+    <audio id="alertSound" src="~/resources/alert.mp3"></audio>
     <script src="~/js/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/chat.js" asp-append-version="true"></script>
 </body>

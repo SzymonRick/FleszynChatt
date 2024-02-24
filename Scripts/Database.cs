@@ -326,6 +326,58 @@ namespace FleszynChat.Scripts
             }
         }
 
+        static public void InsertChatAndParticipants(MySqlConnection con, string chatName, int[] participantUserIds)
+        {
+            try
+            {
+                using (con)
+                {
+                    if (con != null)
+                    {
+                        // Insert chat name into Chats table and retrieve generated ChatID
+                        string chatInsertQuery = @"
+                    INSERT INTO Chats (ChatName)
+                    VALUES (@ChatName);
+                    SELECT LAST_INSERT_ID();
+                ";
+
+                        using (MySqlCommand chatInsertCmd = new MySqlCommand(chatInsertQuery, con))
+                        {
+                            chatInsertCmd.Parameters.AddWithValue("@ChatName", chatName);
+
+                            int chatId = Convert.ToInt32(chatInsertCmd.ExecuteScalar());
+
+                            // Insert participants into ChatParticipants table using a foreach loop
+                            string participantsInsertQuery = @"
+                        INSERT INTO ChatParticipants (ChatID, UserID, LastActiveDateTime)
+                        VALUES (@ChatID, @UserID, @LastActiveDateTime);
+                    ";
+
+                            using (MySqlCommand participantsInsertCmd = new MySqlCommand(participantsInsertQuery, con))
+                            {
+                                participantsInsertCmd.Parameters.Add("@ChatID", MySqlDbType.Int32).Value = chatId;
+                                participantsInsertCmd.Parameters.Add("@UserID", MySqlDbType.Int32);
+                                participantsInsertCmd.Parameters.Add("@LastActiveDateTime", MySqlDbType.DateTime).Value = DateTime.Now;
+
+                                foreach (int userId in participantUserIds)
+                                {
+                                    participantsInsertCmd.Parameters["@UserID"].Value = userId;
+                                    participantsInsertCmd.ExecuteNonQuery();
+                                }
+                            }
+                        }
+
+                        con.Close();
+                        con.Dispose();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inserting chat and participants: {ex.Message}");
+            }
+        }
+
         static public void UpdateLastActiveDateTime(MySqlConnection con, int chatID, int userID)
         {
             try

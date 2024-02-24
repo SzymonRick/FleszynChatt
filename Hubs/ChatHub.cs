@@ -61,6 +61,14 @@ namespace FleszynChatt.Hubs
             return filePath;
         }
 
+        public async Task CreateChat(string chatname, int[] users)
+        {
+            MySqlConnection connection = Database.ConnectDatabase();
+            Database.InsertChatAndParticipants(connection, chatname, users);
+            connection = Database.ConnectDatabase();
+            GlobalData.Chats = Database.GetChats(connection);
+            await Clients.All.SendAsync("Update");
+        }
 
         public override async Task OnConnectedAsync()
         {
@@ -87,6 +95,26 @@ namespace FleszynChatt.Hubs
         {
             MySqlConnection connection = Database.ConnectDatabase();
             await Clients.Client(Context.ConnectionId).SendAsync("UpdateMessages", Database.GetMessages(connection, chatID, step));
+        }
+
+        public async Task SelectUserContact(int someoneID, int userID)
+        {
+            foreach (KeyValuePair<int, Chat> pair in GlobalData.Chats)
+            {
+                if(pair.Value.Uids.Count == 2 && pair.Value.Uids.Contains(someoneID) && pair.Value.Uids.Contains(userID))
+                {
+                    Console.WriteLine(pair.Value.ToString());
+                    await Clients.Client(Context.ConnectionId).SendAsync("OpenChat", pair.Value.Id);
+                    return;
+                }
+            }
+
+            int[] users = { someoneID, userID };
+            MySqlConnection connection = Database.ConnectDatabase();
+            Database.InsertChatAndParticipants(connection, GlobalData.Users[someoneID].Name + ", " + GlobalData.Users[userID].Name, users);
+            connection = Database.ConnectDatabase();
+            GlobalData.Chats = Database.GetChats(connection);
+            await Clients.All.SendAsync("Update");
         }
     }
 }
