@@ -1,0 +1,88 @@
+﻿body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    
+}
+
+.box {
+    width: 50%;
+    padding: 25px;
+    height: 70%;
+    background-image: linear-gradient(45deg, #FFD700, #FF6347);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.box > div > form > div {
+    margin-bottom: 10px; /* Adjust the margin to create space between items */
+}
+
+.textbox {
+    border-radius: 10px; /* Rounded corners */
+    background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
+    padding: 10px; /* Adjust padding as needed */
+}
+
+input {
+    border: none;
+    background: none;
+    padding: 0; /* Optionally remove padding */
+    font-weight: bold;
+    font-size: 22px;
+    max-width: calc(100% - 20px);
+}
+
+*:focus {
+    outline: none;
+}
+
+label {
+    font-weight: bold;
+}
+
+.error {
+    position: absolute; /* Add position: absolute */
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: crimson;
+}
+
+.checkbox {
+    display: block;
+    border-radius: 5px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin-right: 10px;
+    font-family: Calibri;
+    font-size: 16px;
+}
+
+.container {
+    display: flex; /* Align items in the container using flexbox */
+    justify-content: center; /* Center items horizontally */
+}
+
+#keepLoggedIn{
+    opacity: 0;
+}
+
+.checkbox:hover, .textbox:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.checkbox .x {
+    display: none; /* Initially hide the X */
+}
+
+#keepLoggedIn:checked ~ .checkbox .x {
+    display: block; /* Show the X when the checkbox is checked */
+}
