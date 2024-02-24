@@ -27,7 +27,7 @@ namespace FleszynChatt.Controllers
             _chatHubContext = chatHubContext;
         }
 
-        public async Task <IActionResult> Index()
+        public ActionResult Index()
         {
             User user = GlobalData.Users.Values.FirstOrDefault(u => u.Username == HttpContext.User.Identity.Name);
             ChatDataViewModel chatData = new ChatDataViewModel(user.Id);
@@ -36,6 +36,11 @@ namespace FleszynChatt.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult ControlPanel()
         {
             return View();
         }

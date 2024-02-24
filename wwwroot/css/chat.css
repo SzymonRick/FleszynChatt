@@ -7,6 +7,7 @@
 
 #userList {
     display: table;
+    overflow: scroll;
 }
 
 #searchbox:placeholder-shown + #userList {
@@ -15,6 +16,10 @@
 
 #searchbox:focus + #userList, #searchbox:hover + #userList {
     display: table;
+}
+
+#contactList {
+    overflow: scroll;
 }
 
 header {
@@ -62,10 +67,11 @@ header {
     width: 80%; /* Could be more or less, depending on screen size */
 }
 
-#chatCreatorList{
+#chatCreatorList {
     margin: auto;
+    overflow: scroll;
 }
 
-.chatMessages{
-    overflow: auto;
+.chatMessages {
+    overflow: scroll;
 }

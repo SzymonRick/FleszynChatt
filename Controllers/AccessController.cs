@@ -39,7 +39,8 @@ namespace FleszynChatt.Controllers
                 };
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
-                return RedirectToAction("Index", "Home");
+                    //return RedirectToAction("ControlPanel", "Home");
+                    return RedirectToAction("Index", "Home");               
             }
 
             ViewData["ValidateMessage"] = "*Niepoprawne dane logowania";

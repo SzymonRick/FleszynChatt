@@ -389,8 +389,7 @@ function createChat(userId) {
     }
 
     // Now usersIDArray contains at least two IDs of checked checkboxes and the userId parameter
-    console.log("User IDs:", usersIDArray);
-    console.log("Chat Name:", chatName);
+    modal.style.display = "none";
 
     connection.invoke("CreateChat", chatName, usersIDArray);
 }

@@ -4,8 +4,7 @@
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
-    
+    background-color: #302f39;
 }
 
 .box {
@@ -19,6 +18,12 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+    overflow: hidden; /* Prevent contents from sticking outside the box */
+}
+
+.box > div {
+    width: 100%;
+    height: 100%;
 }
 
 .box > div > form > div {
@@ -26,18 +31,36 @@
 }
 
 .textbox {
+    margin: 0 auto;
     border-radius: 10px; /* Rounded corners */
     background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
     padding: 10px; /* Adjust padding as needed */
+    width: 90%; /* Adjust width to fit within the box */
+    overflow: hidden; /* Prevent contents from sticking outside the textbox */
 }
 
-input {
+.textinput {
     border: none;
     background: none;
     padding: 0; /* Optionally remove padding */
+    margin: 0;
     font-weight: bold;
     font-size: 22px;
-    max-width: calc(100% - 20px);
+    width: 100%;
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+img {
+    width: 50%;
+    height: 50%;
+}
+
+form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Space items evenly along the main axis */
 }
 
 *:focus {
@@ -66,9 +89,18 @@ label {
     font-size: 16px;
 }
 
+.logo {
+    width: 100%;
+    display: flex; /* Align items in the container using flexbox */
+    justify-content: center;
+    align-items: center;
+}
+
 .container {
     display: flex; /* Align items in the container using flexbox */
     justify-content: center; /* Center items horizontally */
+    font-family: Calibri;
+    font-size: 22px;
 }
 
 #keepLoggedIn{

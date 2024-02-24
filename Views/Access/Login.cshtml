@@ -20,10 +20,10 @@
             <form asp-controller="Access" asp-action="Login" method="post">
                 @Html.AntiForgeryToken()
                 <div class="textbox">
-                    <input type="Login" placeholder="Login" asp-for="Login" />
+                    <input class="textinput" type="Login" placeholder="Login" asp-for="Login" />
                 </div>
                 <div class="textbox">
-                    <input type="password" placeholder="Hasło" asp-for="Password" />
+                    <input class="textinput" type="password" placeholder="Hasło" asp-for="Password" />
                 </div>
                 <div>
                     <label class="container">                
