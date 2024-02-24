@@ -344,7 +344,6 @@ function listUsers2() {
 }
 
 function createChat(userId) {
-    //
 }
 
 function resizeContainer() {
