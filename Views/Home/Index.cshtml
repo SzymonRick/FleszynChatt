@@ -1,0 +1,61 @@
+﻿@model FleszynChatt.Models.ChatDataViewModel;
+@using FleszynChat.Scripts;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home</title>
+    <link rel="stylesheet" href="~/css/chat.css" asp-append-version="true" />
+</head>
+<body>
+    <div id="container">
+        <header>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">Wyloguj</a>
+        </header>
+
+        <div class="sidebar">
+            <h1>Search Users</h1>
+
+            <input type="text" id="searchbox" onkeyup="listUsers()" placeholder="Search for names..">
+
+            <table id="userList">
+
+            </table>
+
+            <button onclick="document.getElementById('chatCreator').style.display='block'" style="width:auto;">Create Chat</button>
+            <div id="chatCreator" class="modal">
+                <div>
+                    <h1>Search Users</h1>
+                    <input type="text" id="searchbox2" onkeyup="listUsers2()" placeholder="Search for names..">
+                    <table id="chatCreatorList">
+
+                    </table>
+                    <button id="createButton" onclick="createChat(@if(Model != null){@Model.UserId})">Create Chat</button>
+                </div>
+            </div>
+
+            <table id="contactList">
+
+            </table>
+        </div>
+        <div class="chat">
+            <div class="chatMessages">
+            </div>
+
+
+            <div class="sending">
+                <textarea id="messagebox" placeholder="Type your message here..."></textarea>
+                <input type="file" id="fileInput">
+                <button id="sendButton" onclick="sendMessage(@if(Model != null){@Model.UserId})">Send</button>
+            </div>
+        </div>
+    </div>
+    <audio id="alertSound" src="~/audio/alert.mp3"></audio>
+    <script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+</body>
+</html>
