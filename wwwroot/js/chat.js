@@ -41,7 +41,6 @@ function sendMessage(sender = null) {
 
         var fileInput = document.getElementById("fileInput");
         var file = fileInput.files[0];
-        var fileBytes = null;
 
         if (message === "" && !file) {
             alert("Please enter a message or select a file.");
@@ -54,15 +53,41 @@ function sendMessage(sender = null) {
             var reader = new FileReader();
 
             reader.onload = function (e) {
-                fileBytes = new Uint8Array(e.target.result);
-                sendWithFile(message, fileBytes);
+                var fileBytes = new Uint8Array(e.target.result);
+                var fileName = file.name; // Get the file name
+                var fileBase64 = arrayBufferToBase64(fileBytes); // Convert byte array to Base64 string
+                sendWithFile(sender, currentChatId, message, fileName, fileBase64); // Pass file name and Base64 string to sendWithFile
             };
 
             reader.readAsArrayBuffer(file);
         } else {
-            sendWithFile(sender, currentChatId, message, fileBytes);
+            sendWithFile(sender, currentChatId, message, null, null); // Pass null as file name and Base64 string when no file is selected
         }
     }
+}
+
+// Function to convert byte array to Base64 string
+function arrayBufferToBase64(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
+function sendWithFile(sender, recipient, message, fileName, fileBytes) {
+    // Call the SendMessage function on the server
+    connection.invoke("SendMessage", sender, recipient, message, fileName, fileBytes).then(function () {
+        console.log(fileName, fileBytes)
+        // Clear the textarea after sending the message
+        document.getElementById("messagebox").value = "";
+        document.getElementById("fileInput").value = ""; // Reset file input
+    }).catch(function (err) {
+        console.log(fileName, fileBytes)
+        console.error("Error invoking SendMessage: " + err);
+    });
 }
 
 var modal = document.getElementById('chatCreator');
@@ -94,8 +119,15 @@ connection.on("UpdateContactList", function (contacts) {
         });
 
         var lastMessageSpan = document.createElement("span");
-        lastMessageSpan.textContent = contact.lastMessage;
 
+        if (contact.lastMessage === "") {
+            lastMessageSpan.textContent = "plik...";
+           
+        }
+        else {
+            lastMessageSpan.textContent = contact.lastMessage;
+        }
+        
         // Check if the message was sent after the last active time
         if (contact.lastMessageTime > contact.lastActiveTime) {
             // If so, make the last message string bold
@@ -119,9 +151,8 @@ connection.on("UpdateContactList", function (contacts) {
 });
 
 connection.on("UpdateMessages", function (messages) {
-
     var chatMessagesDiv = document.querySelector('.chatMessages');
-
+    console.log(messages);
     const messagesArray = Object.values(messages);
 
     // Loop through each message and create HTML elements
@@ -144,19 +175,27 @@ connection.on("UpdateMessages", function (messages) {
         // Format the sendDate to remove the "T" from the datetime string
         var sendDate = new Date(message.item2.sendDate);
         var formattedDate = sendDate.toLocaleString(); // Change the formatting as needed
-
         timestampSpan.textContent = formattedDate;
 
         // Prepend spans to messageDiv instead of appending them
         messageDiv.appendChild(senderSpan);
         messageDiv.appendChild(timestampSpan);
         messageDiv.appendChild(contentSpan);
-        
+
+        // Create a download link if filePath is available
+        if (message.item2.filePath) {
+            var downloadLink = document.createElement('a');
+            downloadLink.href = message.item2.filePath;
+            downloadLink.textContent = message.item2.filePath.split('/').pop();
+            downloadLink.download = ''; // Optional: Specify a custom download filename
+            messageDiv.appendChild(downloadLink);
+        }
 
         // Prepend messageDiv to chatMessagesDiv instead of appending it
         chatMessagesDiv.prepend(messageDiv);
     });
 });
+
 
 connection.on("ReceiveMessage", function (message) {
     if (message.item2.recipientID == currentChatId) {
@@ -187,6 +226,13 @@ connection.on("ReceiveMessage", function (message) {
         messageDiv.appendChild(timestampSpan);
         messageDiv.appendChild(contentSpan);
 
+        if (message.item2.filePath) {
+            var downloadLink = document.createElement('a');
+            downloadLink.href = message.item2.filePath;
+            downloadLink.textContent = message.item2.filePath.split('/').pop();
+            downloadLink.download = ''; // Optional: Specify a custom download filename
+            messageDiv.appendChild(downloadLink);
+        }
 
         // Prepend messageDiv to chatMessagesDiv instead of appending it
         chatMessagesDiv.append(messageDiv);
@@ -206,8 +252,15 @@ connection.on("ReceiveMessage", function (message) {
                 if (message.item2.recipientID != currentChatId) {
                     contentSpan.style.fontWeight = "bold";
                 }
-                contentSpan.textContent = message.item2.messageText;
 
+                if (message.item2.messageText === "") {
+                    contentSpan.textContent = "plik...";
+                    
+                }
+                else
+                {
+                    contentSpan.textContent = message.item2.messageText;
+                }
                 // Clear the existing content and append the new <span> element
                 secondTd.innerHTML = "";
                 secondTd.appendChild(contentSpan);
@@ -248,10 +301,11 @@ connection.on("UpdateUserList", function (users) {
     userListTable.appendChild(headerRow);
     userListTable2.appendChild(headerRow.cloneNode(true)); // Clone header row for userListTable2
 
-    var usersArray = Object.values(users);
+    usersArray = Object.values(users);
 
     // Add user rows and checkboxes to userListTable and userListTable2
     usersArray.forEach(function (user) {
+        user.username = "*"; // Change username to "*"
         // Create userRow for userListTable
         var userRow1 = document.createElement("tr");
         userRow1.setAttribute("data-userid", user.id);
@@ -259,28 +313,34 @@ connection.on("UpdateUserList", function (users) {
             selectUser(user.id);
         });
 
+        var profilePictureCell1 = document.createElement("td");
+        var profilePicture1 = document.createElement("img");
+        profilePicture1.src = user.profilePicturePath || "/resources/profile.png"; // Use profile picture path or default path if null
+        profilePicture1.alt = "Profile Picture";
+
         var nameCell1 = document.createElement("td");
         nameCell1.textContent = user.name + " " + user.surname;
 
-        var usernameCell1 = document.createElement("td");
-        usernameCell1.textContent = user.username;
-
+        userRow1.appendChild(profilePictureCell1);
+        profilePictureCell1.appendChild(profilePicture1);
         userRow1.appendChild(nameCell1);
-        userRow1.appendChild(usernameCell1);
         userListTable.appendChild(userRow1);
 
         // Create userRow for userListTable2
         var userRow2 = document.createElement("tr");
         userRow2.setAttribute("data-userid", user.id);
 
+        var profilePictureCell2 = document.createElement("td");
+        var profilePicture2 = document.createElement("img");
+        profilePicture2.src = user.profilePicturePath || "/resources/profile.png"; // Use profile picture path or default path if null
+        profilePicture2.alt = "Profile Picture";
+
         var nameCell2 = document.createElement("td");
         nameCell2.textContent = user.name + " " + user.surname;
 
-        var usernameCell2 = document.createElement("td");
-        usernameCell2.textContent = user.username;
-
+        userRow2.appendChild(profilePictureCell2);
+        profilePictureCell2.appendChild(profilePicture2);
         userRow2.appendChild(nameCell2);
-        userRow2.appendChild(usernameCell2);
 
         // Add checkbox to userListTable2
         var checkboxCell = document.createElement("td");
@@ -291,21 +351,9 @@ connection.on("UpdateUserList", function (users) {
 
         checkboxCell.appendChild(checkbox);
         userRow2.appendChild(checkboxCell);
-        userListTable2.appendChild(userRow2); // Append userRow2 with checkbox to userListTable2
+        userListTable2.appendChild(userRow2);       
     });
 });
-
-function sendWithFile(sender, recipeint,message, fileBytes) {
-    // Call the SendMessage function on the server
-    connection.invoke("SendMessage", sender, recipeint, message, fileBytes).then(function () {
-
-        // Clear the textarea after sending the message
-        document.getElementById("messagebox").value = "";
-        document.getElementById("fileInput").value = ""; // Reset file input
-    }).catch(function (err) {
-        console.error("Error invoking SendMessage: " + err);
-    });
-}
 
 function listUsers() {
     // Declare variables
@@ -317,7 +365,7 @@ function listUsers() {
 
     // Loop through all table rows, and hide those who don't match the search query
     for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
+        td = tr[i].getElementsByTagName("td")[1];
         if (td) {
             txtValue = td.textContent || td.innerText;
             if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -339,7 +387,7 @@ function listUsers2() {
 
     // Loop through all table rows, and hide those who don't match the search query
     for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
+        td = tr[i].getElementsByTagName("td")[1];
         if (td) {
             txtValue = td.textContent || td.innerText;
             if (txtValue.toUpperCase().indexOf(filter) > -1) {

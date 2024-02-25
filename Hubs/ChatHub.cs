@@ -13,17 +13,30 @@ namespace FleszynChatt.Hubs
 {
     public class ChatHub : Hub
     {
-        public async Task SendMessage(int senderId, int recipientId, string messageContent, byte[] fileBytes)
-        {
-            Console.WriteLine(messageContent);
-            // Save the file
-            string filePath = null;
-            if (fileBytes != null && fileBytes.Length > 0)
-            {
-                filePath = await SaveFile(fileBytes);
-            }
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
+        public ChatHub(IWebHostEnvironment webHostEnvironment)
+        {
+            _webHostEnvironment = webHostEnvironment;
+        }
+
+        public async Task SendMessage(int senderId, int recipientId, string? messageContent, string? fileName, string? fileContentBase64)
+        {
+
+            string filePath = null;
+            if (fileContentBase64 != null && fileContentBase64.Length > 0) {
+                byte[] fileBytes = Convert.FromBase64String(fileContentBase64);
+
+                // Save the file
+                
+                if (!string.IsNullOrEmpty(fileName) && fileBytes.Length > 0)
+                {
+                    filePath = await SaveFile(fileName, fileBytes);
+                }
+            }
+            
             // Save message to the database
+            Console.WriteLine(filePath);
             var message = new Message(senderId, recipientId, DateTime.Now, messageContent, filePath);
             MySqlConnection connection = Database.ConnectDatabase();
             Database.InsertMessage(connection, message);
@@ -31,6 +44,39 @@ namespace FleszynChatt.Hubs
             // Broadcast the received message to all clients in the recipient chat
             Tuple<string, Message> myTuple = Tuple.Create(GlobalData.Users[senderId].Name + " " + GlobalData.Users[senderId].Surname, message);
             await Clients.Group(recipientId.ToString()).SendAsync("ReceiveMessage", myTuple);
+        }
+
+        // Function to save a file
+        public async Task<string> SaveFile(string fileName, byte[] fileBytes)
+        {
+            // Get the web root path
+            string webRootPath = _webHostEnvironment.WebRootPath;
+
+            // Specify the directory structure within the web root where you want to save the file
+            string relativeFilePath = "ChatFiles";
+
+            // Create a file name with datetime component
+            string dateTimeComponent = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            string newFileName = $"{Path.GetFileNameWithoutExtension(fileName)}_{dateTimeComponent}{Path.GetExtension(fileName)}";
+
+            // Combine the web root path and the relative file path to create the file save path
+            string filePath = Path.Combine(webRootPath, relativeFilePath, newFileName);
+
+            // Write the file bytes to the specified file path
+            await File.WriteAllBytesAsync(filePath, fileBytes);
+
+            // Get the indices of the last two directory separator characters in the filePath
+            int lastSeparatorIndex = filePath.LastIndexOf(Path.DirectorySeparatorChar);
+            int secondLastSeparatorIndex = filePath.Substring(0, lastSeparatorIndex).LastIndexOf(Path.DirectorySeparatorChar);
+
+            // Extract the substring after the second-to-last directory separator character
+            string trimmedFilePath = filePath.Substring(secondLastSeparatorIndex + 1);
+
+            // Replace backslashes with forward slashes
+            trimmedFilePath = '/' + trimmedFilePath.Replace(Path.DirectorySeparatorChar, '/');
+            Console.WriteLine(trimmedFilePath);
+
+            return trimmedFilePath;
         }
 
         public async Task SendUserData()
@@ -50,16 +96,7 @@ namespace FleszynChatt.Hubs
             Database.UpdateLastActiveDateTime(connection, chatId, userId);
             connection = Database.ConnectDatabase();
             await Clients.Client(GlobalData.Connections[userId]).SendAsync("UpdateContactList", Database.GetContacts(connection, Context.User.Identity.Name));
-        }
-
-        // Function to save a file
-        private async Task<string> SaveFile(byte[] fileBytes)
-        {
-            string fileName = Guid.NewGuid().ToString(); // Generate a unique file name
-            string filePath = Path.Combine("your_file_directory", fileName); // Specify your file directory
-            await File.WriteAllBytesAsync(filePath, fileBytes);
-            return filePath;
-        }
+        }    
 
         public async Task CreateChat(string chatname, int[] users)
         {

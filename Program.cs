@@ -11,6 +11,8 @@ using FleszynChatt.Classes;
 using MySql.Data.MySqlClient;
 using FleszynChat.Classes;
 using FleszynChat.Scripts;
+using Microsoft.AspNet.SignalR;
+using Owin;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +28,11 @@ builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "X-CSRF-TOKEN";
 });
-builder.Services.AddSignalR();
+
+builder.Services.AddSignalR(options =>
+{
+    options.MaximumReceiveMessageSize = null; // Set the maximum WebSocket message size
+});
 
 builder.Services.AddHsts(options =>
 {

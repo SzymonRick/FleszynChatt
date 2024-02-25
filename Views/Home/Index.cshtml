@@ -1,5 +1,7 @@
 ﻿@model FleszynChatt.Models.ChatDataViewModel;
 @using FleszynChat.Scripts;
+@using System.IO
+
 @{
     Layout = null;
 }
@@ -14,6 +16,7 @@
 <body>
     <div id="container">
         <header>
+            <img src="~/resources/logo.png" />
             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">Wyloguj</a>
         </header>
 
@@ -55,6 +58,8 @@
             </div>
         </div>
     </div>
+
+
     <audio id="alertSound" src="~/resources/alert.mp3"></audio>
     <script src="~/js/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/chat.js" asp-append-version="true"></script>

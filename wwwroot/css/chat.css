@@ -6,8 +6,10 @@
 }
 
 #userList {
+    position:fixed;
     display: table;
     overflow: scroll;
+    background-color: white;
 }
 
 #searchbox:placeholder-shown + #userList {
@@ -74,4 +76,9 @@ header {
 
 .chatMessages {
     overflow: scroll;
+}
+
+header > img {
+    width:10%;
+    height:10%;
 }

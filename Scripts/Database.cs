@@ -110,7 +110,7 @@ namespace FleszynChat.Scripts
                 {
                     if (con != null)
                     {
-                        string query = "SELECT UserID, Username, Password, Email, Name, Surname, ProfilePicturePath FROM Users";
+                        string query = "SELECT UserID, Username, Email, Name, Surname, ProfilePicturePath FROM Users";
 
                         using (MySqlCommand command = new MySqlCommand(query, con))
                         using (MySqlDataReader reader = command.ExecuteReader())
@@ -422,8 +422,6 @@ namespace FleszynChat.Scripts
     INNER JOIN Users u ON m.SenderUserID = u.UserID
     WHERE m.RecipientID = @RecipientID
     ORDER BY m.SendDate DESC
-    LIMIT 50
-    OFFSET @SkipCount;
 ";
 
                 using (MySqlCommand command = new MySqlCommand(query, con))
