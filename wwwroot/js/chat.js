@@ -210,6 +210,7 @@ connection.on("ReceiveMessage", function (message) {
         senderSpan.textContent = message.item1 + ': ';
 
         var contentSpan = document.createElement('span');
+        contentSpan.classList.add('wiadomosc')
         contentSpan.textContent = message.item2.messageText;
 
         var timestampSpan = document.createElement('span');
@@ -274,7 +275,30 @@ connection.on("ReceiveMessage", function (message) {
 
 });
 
+connection.on("UpdateConnections", function (connections) {
+    if (usersArray != null) {
+        console.log(connections);
+        // Iterate over the connections array
+        Object.values(connections).forEach(function (userId) {
+            console.log("Searching for userId: " + userId);
+            // Find the tr element with data-userid equal to the userId
+            var element = document.querySelector('[data-userid="' + userId + '"]');
+            console.log("Matching element: ", element);
+            if (element) {
+                // Optionally, you can perform operations on the matching element
+                // For example, make the second td element bold and green
+                var secondTd = element.parentElement.querySelector('td:nth-child(2)');
+                if (secondTd) {
+                    secondTd.style.fontWeight = 'bold';
+                    secondTd.style.color = 'green';
+                }
+            }
+        });
+    }
+});
+
 connection.on("UpdateUserList", function (users) {
+    console.log(users)
 
     var userListTable = document.getElementById("userList");
     var userListTable2 = document.getElementById("chatCreatorList");
@@ -305,53 +329,55 @@ connection.on("UpdateUserList", function (users) {
 
     // Add user rows and checkboxes to userListTable and userListTable2
     usersArray.forEach(function (user) {
-        user.username = "*"; // Change username to "*"
-        // Create userRow for userListTable
-        var userRow1 = document.createElement("tr");
-        userRow1.setAttribute("data-userid", user.id);
-        userRow1.addEventListener("click", function () {
-            selectUser(user.id);
-        });
+        if (user.id != currentUserId) {
+            user.username = "*"; // Change username to "*"
+            // Create userRow for userListTable
+            var userRow1 = document.createElement("tr");
+            userRow1.setAttribute("data-userid", user.id);
+            userRow1.addEventListener("click", function () {
+                selectUser(user.id);
+            });
 
-        var profilePictureCell1 = document.createElement("td");
-        var profilePicture1 = document.createElement("img");
-        profilePicture1.src = user.profilePicturePath || "/resources/profile.png"; // Use profile picture path or default path if null
-        profilePicture1.alt = "Profile Picture";
+            var profilePictureCell1 = document.createElement("td");
+            var profilePicture1 = document.createElement("img");
+            profilePicture1.src = user.profilePicturePath || "/resources/profile.png"; // Use profile picture path or default path if null
+            profilePicture1.alt = "Profile Picture";
 
-        var nameCell1 = document.createElement("td");
-        nameCell1.textContent = user.name + " " + user.surname;
+            var nameCell1 = document.createElement("td");
+            nameCell1.textContent = user.name + " " + user.surname;
 
-        userRow1.appendChild(profilePictureCell1);
-        profilePictureCell1.appendChild(profilePicture1);
-        userRow1.appendChild(nameCell1);
-        userListTable.appendChild(userRow1);
+            userRow1.appendChild(profilePictureCell1);
+            profilePictureCell1.appendChild(profilePicture1);
+            userRow1.appendChild(nameCell1);
+            userListTable.appendChild(userRow1);
 
-        // Create userRow for userListTable2
-        var userRow2 = document.createElement("tr");
-        userRow2.setAttribute("data-userid", user.id);
+            // Create userRow for userListTable2
+            var userRow2 = document.createElement("tr");
+            userRow2.setAttribute("data-userid", user.id);
 
-        var profilePictureCell2 = document.createElement("td");
-        var profilePicture2 = document.createElement("img");
-        profilePicture2.src = user.profilePicturePath || "/resources/profile.png"; // Use profile picture path or default path if null
-        profilePicture2.alt = "Profile Picture";
+            var profilePictureCell2 = document.createElement("td");
+            var profilePicture2 = document.createElement("img");
+            profilePicture2.src = user.profilePicturePath || "/resources/profile.png"; // Use profile picture path or default path if null
+            profilePicture2.alt = "Profile Picture";
 
-        var nameCell2 = document.createElement("td");
-        nameCell2.textContent = user.name + " " + user.surname;
+            var nameCell2 = document.createElement("td");
+            nameCell2.textContent = user.name + " " + user.surname;
 
-        userRow2.appendChild(profilePictureCell2);
-        profilePictureCell2.appendChild(profilePicture2);
-        userRow2.appendChild(nameCell2);
+            userRow2.appendChild(profilePictureCell2);
+            profilePictureCell2.appendChild(profilePicture2);
+            userRow2.appendChild(nameCell2);
 
-        // Add checkbox to userListTable2
-        var checkboxCell = document.createElement("td");
-        var checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = user.id;
-        checkbox.className = "chatCheckbox";
+            // Add checkbox to userListTable2
+            var checkboxCell = document.createElement("td");
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = user.id;
+            checkbox.className = "chatCheckbox";
 
-        checkboxCell.appendChild(checkbox);
-        userRow2.appendChild(checkboxCell);
-        userListTable2.appendChild(userRow2);       
+            checkboxCell.appendChild(checkbox);
+            userRow2.appendChild(checkboxCell);
+            userListTable2.appendChild(userRow2);  
+        }    
     });
 });
 
@@ -466,6 +492,7 @@ window.onload = function () {
     connection.start().then(function () {
         connection.invoke("SendUserData");
         connection.invoke("SendContactsData");
+        connection.invoke("SendConnections");
     }).catch(function (err) {
         console.error("SignalR connection error: " + err);
     });

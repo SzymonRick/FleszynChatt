@@ -11,17 +11,20 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Home</title>
+    <link rel="icon" href="~/resources/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="~/css/chat.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/chat2.css" asp-append-version="true" />
 </head>
 <body>
+    <header>
+        <img id="img" src="~/resources/logo.png" />
+        <a id="NAPIS">FLESZCHAT</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">Wyloguj</a>
+    </header>
     <div id="container">
-        <header>
-            <img src="~/resources/logo.png" />
-            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">Wyloguj</a>
-        </header>
+        
 
         <div class="sidebar">
-            <h1>Search Users</h1>
 
             <input type="text" id="searchbox" onkeyup="listUsers()" placeholder="Search for names..">
 
@@ -29,7 +32,8 @@
 
             </table>
 
-            <button onclick="document.getElementById('chatCreator').style.display='block'" style="width:auto;">Create Chat</button>
+            <button id="stuartbutton" onclick="document.getElementById('chatCreator').style.display='block'" style="width:auto;">Create Chat</button>
+
             <div id="chatCreator" class="modal">
                 <div>
                     <h1>Search Users</h1>
@@ -37,7 +41,7 @@
                     <table id="chatCreatorList">
 
                     </table>
-                    <input type="text" id="chatNamer" placeholder="Nazwij Chat...">
+                    <input type="text" id="chatNamer" placeholder="Nazwij Chat..." maxlength="20">
                     <button id="createButton" onclick="createChat(@if(Model != null){@Model.UserId})">Create Chat</button>
                 </div>
             </div>
@@ -46,15 +50,15 @@
 
             </table>
         </div>
-        <div class="chat">
-            <div class="chatMessages">
-            </div>
-
-
-            <div class="sending">
-                <textarea id="messagebox" placeholder="Type your message here..."></textarea>
-                <input type="file" id="fileInput">
-                <button id="sendButton" onclick="sendMessage(@if(Model != null){@Model.UserId})">Send</button>
+        <div class="chatbox2">
+            <div class="chat">
+                <div class="chatMessages">
+                </div>
+                <div class="sending">
+                    <textarea id="messagebox" placeholder="Type your message here..."></textarea>
+                    <input type="file" id="fileInput">
+                    <button id="sendButton" onclick="sendMessage(@if(Model != null){@Model.UserId})">Send</button>
+                </div>
             </div>
         </div>
     </div>

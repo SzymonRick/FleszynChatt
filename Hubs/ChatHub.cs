@@ -111,6 +111,7 @@ namespace FleszynChatt.Hubs
         {
             User user = GlobalData.Users.Values.FirstOrDefault(u => u.Username == Context.User.Identity.Name);
             GlobalData.Connections.Add(user.Id, Context.ConnectionId);
+            await Clients.All.SendAsync("UpdateConnections", GlobalData.Connections.Keys);
             await Clients.Client(Context.ConnectionId).SendAsync("SetUserId", user.Id);
             await base.OnConnectedAsync();
         }
@@ -118,8 +119,8 @@ namespace FleszynChatt.Hubs
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             User user = GlobalData.Users.Values.FirstOrDefault(u => u.Username == Context.User.Identity.Name);
-            MySqlConnection connection = Database.ConnectDatabase();
             GlobalData.Connections.Remove(user.Id);
+            await Clients.All.SendAsync("UpdateConnections", GlobalData.Connections.Keys);
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -152,6 +153,11 @@ namespace FleszynChatt.Hubs
             connection = Database.ConnectDatabase();
             GlobalData.Chats = Database.GetChats(connection);
             await Clients.All.SendAsync("Update");
+        }
+
+        public async Task SendConnections()
+        {
+            await Clients.Client(Context.ConnectionId).SendAsync("UpdateConnections", GlobalData.Connections.Keys);
         }
     }
 }
