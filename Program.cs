@@ -69,6 +69,8 @@ GlobalData.Users = Database.GetUsers(connection);
 connection = Database.ConnectDatabase();
 GlobalData.Chats = Database.GetChats(connection);
 
+Timer timer = new Timer(Database.BackupDataBase, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -85,3 +87,5 @@ app.MapControllerRoute(
 app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
+
+Thread.Sleep(Timeout.Infinite);

@@ -1,7 +1,8 @@
 ﻿using FleszynChat.Classes;
-using Humanizer;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Diagnostics;
 
 namespace FleszynChat.Scripts
 {
@@ -9,7 +10,7 @@ namespace FleszynChat.Scripts
     {
         static string server = "localhost";
         static string username = "root";
-        static string databaseName = "ChatApp";
+        static string databaseName = "chatapp";
 
         static string connectionString = $"Server={server};Uid={username};Database={databaseName};";
 
@@ -26,6 +27,80 @@ namespace FleszynChat.Scripts
                 connection = null;
             }
             return connection;
+        }
+
+        static public void BackupDataBase(object state)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        using (MySqlBackup mb = new MySqlBackup(command))
+                        {
+                            command.Connection = connection;
+
+                            string currentDirectory = Directory.GetCurrentDirectory(); // Assuming the project directory is one level above "Backups"
+                            string backupDirectory = Path.Combine(currentDirectory, "Backups");
+
+                            // Ensure the backup directory exists
+                            if (!Directory.Exists(backupDirectory))
+                            {
+                                Directory.CreateDirectory(backupDirectory);
+                            }
+
+                            string backupFilePath = Path.Combine(backupDirectory, $"ChatBackup_{DateTime.Now.ToString("yyyyMMddHHmmss")}.sql");
+
+                            connection.Open();
+                            mb.ExportToFile(backupFilePath);
+                            connection.Close();
+                            connection.Dispose();
+
+                            Console.WriteLine("Backup completed successfully.");
+
+                        }                       
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Backup failed with error: {ex.Message}");
+            }
+        }
+
+        static public void RestoreDataBase(string backupFile)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        using (MySqlBackup mb = new MySqlBackup(command))
+                        {
+                            command.Connection = connection;
+
+                            string currentDirectory = Directory.GetCurrentDirectory(); // Assuming the project directory is one level above "Backups"
+                            string backupDirectory = Path.Combine(currentDirectory, "Backups");
+                            string backupFilePath = Path.Combine(backupDirectory, backupFile);
+
+                            command.Connection = connection;
+                            connection.Open();
+                            mb.ImportFromFile(backupFilePath);
+                            connection.Close();
+                            connection.Dispose();
+
+                            Console.WriteLine("Backup restore completed successfully.");
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Backup failed restore error: {ex.Message}");
+            }
         }
 
         static public void CreateDataBase()
