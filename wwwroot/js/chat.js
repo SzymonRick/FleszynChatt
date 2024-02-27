@@ -194,6 +194,7 @@ connection.on("UpdateMessages", function (messages) {
         // Prepend messageDiv to chatMessagesDiv instead of appending it
         chatMessagesDiv.prepend(messageDiv);
     });
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight - chatMessagesDiv.clientHeight;
 });
 
 
@@ -237,6 +238,7 @@ connection.on("ReceiveMessage", function (message) {
 
         // Prepend messageDiv to chatMessagesDiv instead of appending it
         chatMessagesDiv.append(messageDiv);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight - chatMessagesDiv.clientHeight;
     }
 
         var contactListTable = document.getElementById("contactList");
@@ -306,24 +308,6 @@ connection.on("UpdateUserList", function (users) {
     // Clear existing rows
     userListTable.innerHTML = "";
     userListTable2.innerHTML = "";
-
-    // Add header row to both tables
-    var headerRow = document.createElement("tr");
-    headerRow.classList.add("header");
-
-    var nameHeader = document.createElement("th");
-    nameHeader.style.width = "60%";
-    nameHeader.textContent = "Name";
-
-    var usernameHeader = document.createElement("th");
-    usernameHeader.style.width = "40%";
-    usernameHeader.textContent = "Username";
-
-    headerRow.appendChild(nameHeader);
-    headerRow.appendChild(usernameHeader);
-
-    userListTable.appendChild(headerRow);
-    userListTable2.appendChild(headerRow.cloneNode(true)); // Clone header row for userListTable2
 
     usersArray = Object.values(users);
 

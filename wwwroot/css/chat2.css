@@ -46,10 +46,6 @@ button {
     
 }
 
-#userList {
-    display: table;
-}
-
 #NAPIS{
 
     font-family: Noto Sans, sans-serif;
@@ -103,6 +99,7 @@ header {
     left: 0px;
     max-width: 15%; /* Maksymalna szerokość */
     overflow: hidden;
+    min-width:300px;
 
 }
 
@@ -115,7 +112,7 @@ header {
 .chatbox2{
 
     width: calc(85% - 6px);
-    height: calc(90% - 10px);
+    height: calc(90% - 4px);
     padding: auto;
     position: absolute;
     left: calc(15% + 2px);
@@ -124,7 +121,7 @@ header {
 }
 .chat {
     width: 100%;
-    height: calc(85% - 4px);
+    height: 85%;
     border: 2px solid black;
     border-bottom: none;
 }
@@ -148,7 +145,6 @@ header {
 #searchbox{
     font-size: 1em;
     font-weight: bold;
-    padding: 2px;
     background-color: rgba(173, 216, 230, 0.7);
     border: 2px solid black;
 }
@@ -158,20 +154,25 @@ header {
     font-weight: bold;
     padding: 2px;
     background-color: rgba(173, 216, 230, 0.7);
+    width:100%;
 }
 
-
-#chatCreatorList td, tr, th{
-
-    border: 3px solid black;
-
-}
 #chatCreatorList{
     border-collapse: collapse;
-    border: 3px solid black;
     margin: 20px;
+    width: 90%;
+    font-size: 30px;
+    font-weight: bold;
 
 }
+
+    #chatCreatorList img {
+        width:30%
+    }
+
+    #userList img {
+        width: 30%
+    }
 
 #chatcreator{
     margin: 20px;
@@ -243,7 +244,7 @@ header {
 }
 .sending {
     display: flex;
-    height: 16.4%;
+    height: 16%;
     width: 85%;
     position: fixed;
     bottom: 0px;
@@ -295,9 +296,9 @@ header {
 
 #searchbox{
     background-color: rgba(173, 216, 230, 0.7);
-    margin: 5px;
-    padding: 5px;
     border:1px;
+    padding:5px;
+    border-radius:5px;
 }
 #stuartbutton{
     margin: 5px;

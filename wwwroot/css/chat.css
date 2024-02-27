@@ -1,13 +1,13 @@
 ﻿#userList {
-    display: table;
+    display: none;
     overflow: scroll;
     background-color: rgba(173, 216, 230, 0.7);
 }
 
-#searchbox:placeholder-shown + #userList {
-    display: none;
+#searchbox:focus + #userList, #searchbox:hover + #userList {
+    display: table;
 }
 
-#searchbox:focus + #userList, #searchbox:hover + #userList {
+#userList:hover {
     display: table;
 }
