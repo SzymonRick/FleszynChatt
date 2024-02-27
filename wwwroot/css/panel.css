@@ -1,0 +1,101 @@
+body{
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    overflow:auto;
+    background-image: linear-gradient(45deg, #FFD700, #FF6347);
+}
+
+#gowny{
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    overflow:auto;
+    border: 1px solid black;
+    width: 90%;
+    height: 90%;
+}
+
+#head{
+    overflow:auto;
+    width: 80%;
+    height: 10%;
+    display: block;
+    border: 1px solid black;
+    margin:  20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: rgba(0,0,0,0.4);
+}
+#main{
+    overflow:auto;
+    width: 80%;
+    height: 70%;
+    display: block;
+    /*border: 1px solid black;*/
+    margin:  20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+}
+#stopa{
+    overflow:auto;
+    width: 80%;
+    height: 10%;
+    display: block;
+    /*border: 1px solid black;*/
+    margin:  20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+
+.lysta{
+    overflow:auto;
+    width: 30%;
+    height: 80%;
+    border: 1px solid black;
+    margin: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: rgba(0,0,0,0.4);
+
+}
+
+.stuartbutton2{ 
+    margin: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 5px;
+
+}
+
+.searchbox{
+    padding: 5px;
+
+}
+
+#stuartbutton{
+    margin: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 5px;
+}
+
+.przycisk{
+    width: 30%;
+    height: 80%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+}

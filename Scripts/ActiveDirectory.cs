@@ -5,14 +5,22 @@ using System.IO;
 using System.DirectoryServices;
 using FleszynChat.Classes;
 using System.Text.RegularExpressions;
+using MySql.Data.MySqlClient;
+using FleszynChatt.Classes;
 
 
 namespace FleszynChat.Scripts
 {
     public class ActiveDirectory
     {
-        public void ConntectToAD(string domainController, string ADusername, string ADpassword)
+        static public void ConnectToAD(object state)
         {
+            // Retrieve domainController, ADusername, and ADpassword from state
+            Tuple<string, string, string> parameters = (Tuple<string, string, string>)state;
+            string domainController = parameters.Item1;
+            string ADusername = parameters.Item2;
+            string ADpassword = parameters.Item3;
+
             try
             {
                 using (DirectoryEntry entry = new DirectoryEntry("LDAP://" + domainController, ADusername, ADpassword))
@@ -55,6 +63,9 @@ namespace FleszynChat.Scripts
                         Console.WriteLine($"Email: {email}");
                         Console.WriteLine($"Profile Picture Path: {profilePicturePath}");
                         Console.WriteLine();
+
+                        MySqlConnection connection = Database.ConnectDatabase();
+                        Database.AddUser(connection, username, GlobalData.defaultPassword, email, firstName, lastName, profilePicturePath);
                     }
                 }
             }
@@ -64,7 +75,7 @@ namespace FleszynChat.Scripts
             }
         }
 
-        private string GetPropertyValue(SearchResult result, string propertyName)
+        static private string GetPropertyValue(SearchResult result, string propertyName)
         {
             if (result.Properties.Contains(propertyName))
             {
@@ -76,7 +87,7 @@ namespace FleszynChat.Scripts
             }
         }
 
-        private string SaveProfilePicture(string username, byte[] profilePictureBytes)
+        static private string SaveProfilePicture(string username, byte[] profilePictureBytes)
         {
             string directoryPath = "ProfilePictures"; // Directory to save profile pictures
             string filePath = Path.Combine(directoryPath, $"{username}.jpg");

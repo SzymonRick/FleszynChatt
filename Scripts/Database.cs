@@ -1,4 +1,5 @@
 ﻿using FleszynChat.Classes;
+using FleszynChatt.Classes;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using MySql.Data.MySqlClient;
 using System.Data;
@@ -474,6 +475,7 @@ namespace FleszynChat.Scripts
 
                             cmd.ExecuteNonQuery();
                             con.Close();
+                            con.Dispose ();
                         }
                     }
                 }
@@ -530,6 +532,184 @@ namespace FleszynChat.Scripts
             }
 
             return messages;
+        }
+
+        static public void AddUser(MySqlConnection con, string username, string password, string email, string name, string surname, string? profilePicturePath)
+        {
+            try
+            {
+                using (con)
+                {
+                    if (con != null)
+                    {
+                        // Define the INSERT query
+                        string insertQuery = @"
+                    INSERT INTO Users (Username, Password, Email, Name, Surname, ProfilePicturePath)
+                    VALUES (@Username, @Password, @Email, @Name, @Surname, @ProfilePicturePath);
+                ";
+
+                        using (MySqlCommand cmd = new MySqlCommand(insertQuery, con))
+                        {
+                            // Add parameters to the query
+                            cmd.Parameters.AddWithValue("@Username", username);
+                            cmd.Parameters.AddWithValue("@Password", password);
+                            cmd.Parameters.AddWithValue("@Email", email);
+                            cmd.Parameters.AddWithValue("@Name", name);
+                            cmd.Parameters.AddWithValue("@Surname", surname);
+                            cmd.Parameters.AddWithValue("@ProfilePicturePath", profilePicturePath);
+
+                            // Open the connection and execute the query
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                            con.Dispose();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding user: {ex.Message}");
+            }
+        }
+
+        static public void DeleteUser(MySqlConnection con, int userID)
+        {
+            try
+            {
+                using (con)
+                {
+                    if (con != null)
+                    {
+                        string query = @"
+                    DELETE FROM Users WHERE UserID = @UserID;
+                ";
+
+                        using (MySqlCommand cmd = new MySqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@UserID", userID);
+
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                            con.Dispose();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting user: {ex.Message}");
+            }
+        }
+
+        static public void ResetUser(MySqlConnection con, int userID)
+        {
+            try
+            {
+                using (con)
+                {
+                    if (con != null)
+                    {
+                        string query = @"
+                    UPDATE Users SET Password = @DefaultPassword WHERE UserID = @UserID;
+                ";
+
+                        using (MySqlCommand cmd = new MySqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@DefaultPassword", GlobalData.defaultPassword);
+                            cmd.Parameters.AddWithValue("@UserID", userID);
+
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                            con.Dispose();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error resetting user password: {ex.Message}");
+            }
+        }
+
+        static public void SetPasswordUser(MySqlConnection con, string username, string newPassword)
+        {
+            try
+            {
+                using (con)
+                {
+                    if (con != null)
+                    {
+                        string query = @"
+                    UPDATE Users SET Password = @NewPassword WHERE Username = @Username;
+                ";
+
+                        using (MySqlCommand cmd = new MySqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@NewPassword", newPassword);
+                            cmd.Parameters.AddWithValue("@Username", username);
+
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error resetting user password: {ex.Message}");
+            }
+        }
+
+        static public void DeleteChat(MySqlConnection con, int chatID)
+        {
+            try
+            {
+                using (con)
+                {
+                    if (con != null)
+                    {
+                        // Delete chat participants
+                        string deleteParticipantsQuery = @"
+                    DELETE FROM ChatParticipants WHERE ChatID = @ChatID;
+                ";
+
+                        // Delete messages
+                        string deleteMessagesQuery = @"
+                    DELETE FROM Messages WHERE RecipientID = @ChatID OR SenderUserID = @ChatID;
+                ";
+
+                        // Delete chat
+                        string deleteChatQuery = @"
+                    DELETE FROM Chats WHERE ChatID = @ChatID;
+                ";
+
+                        using (MySqlCommand cmd = new MySqlCommand())
+                        {
+                            cmd.Connection = con;
+
+                            // Delete chat participants
+                            cmd.CommandText = deleteParticipantsQuery;
+                            cmd.Parameters.AddWithValue("@ChatID", chatID);
+                            cmd.ExecuteNonQuery();
+
+                            // Delete messages
+                            cmd.CommandText = deleteMessagesQuery;
+                            cmd.ExecuteNonQuery();
+
+                            // Delete chat
+                            cmd.CommandText = deleteChatQuery;
+                            cmd.ExecuteNonQuery();
+
+                            con.Close();
+                            con.Dispose();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting chat: {ex.Message}");
+            }
         }
     }
 }

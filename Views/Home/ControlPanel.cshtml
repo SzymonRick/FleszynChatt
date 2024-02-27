@@ -10,6 +10,52 @@
     <link rel="stylesheet" href="~/css/panel.css" asp-append-version="true" />
 </head>
 <body>
-    
+    <h1>PANEL ADMINA</h1>
+    <div id="gowny">
+
+        <input type="text" class="searchbox" placeholder="Kontroler domeny..">
+        <input type="text" class="searchbox" placeholder="Nazwa użytkownika..">
+        <input type="text" class="searchbox" placeholder="Hasło..">
+        <input type="text" class="searchbox" placeholder="Podstawowe hasło..">
+        <button id="stuartbutton" onclick="polacz()">Połącz</button>
+        <div id="main">
+            <div class="lysta">
+                <table id="userList">
+                </table>
+            </div>
+            <div class="lysta">
+                <table id="chatList">
+                </table>
+
+            </div>
+
+            <div class="lysta">
+                <table id="backupList">
+                </table>
+
+            </div>
+
+
+        </div>
+        <div id="stopa">
+
+            <div class="przycisk">
+                <button class="stuartbutton2" onclick="deleteUser()">Usuń użytkownika</button>
+                <button class="stuartbutton2" onclick="resetUser()">Zresetuj hasło</button>
+
+            </div>
+            <div class="przycisk">
+                <button class="stuartbutton2" onclick="deleteChat()">Usuń czat</button>
+
+            </div>
+            <div class="przycisk">
+                <button class="stuartbutton2" onclick="backup()">Zastosuj backup</button>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/Panel.js" asp-append-version="true"></script>
 </body>
 </html>

@@ -26,7 +26,7 @@
 
         <div class="sidebar">
 
-            <input type="text" id="searchbox" onkeyup="listUsers()" placeholder="Search for names..">
+            <input type="text" id="searchbox" onkeyup="listUsers()" placeholder="Wyszukaj użytkownika..">
 
             <table id="userList">
 
@@ -37,12 +37,12 @@
             <div id="chatCreator" class="modal">
                 <div>
                     <h1>Search Users</h1>
-                    <input type="text" id="searchbox2" onkeyup="listUsers2()" placeholder="Search for names..">
+                    <input type="text" id="searchbox2" onkeyup="listUsers2()" placeholder="Wyszukaj użytkownika..">
                     <table id="chatCreatorList">
 
                     </table>
                     <input type="text" id="chatNamer" placeholder="Nazwij Chat..." maxlength="20">
-                    <button id="createButton" onclick="createChat(@if(Model != null){@Model.UserId})">Create Chat</button>
+                    <button id="createButton" onclick="createChat(@if(Model != null){@Model.UserId})">Stwórz Chat</button>
                 </div>
             </div>
 
@@ -55,9 +55,9 @@
                 <div class="chatMessages">
                 </div>
                 <div class="sending">
-                    <textarea id="messagebox" placeholder="Type your message here..."></textarea>
+                    <textarea id="messagebox" placeholder="Wpisz wiadomość..."></textarea>
                     <input type="file" id="fileInput">
-                    <button id="sendButton" onclick="sendMessage(@if(Model != null){@Model.UserId})">Send</button>
+                    <button id="sendButton" onclick="sendMessage(@if(Model != null){@Model.UserId})">Wyślij</button>
                 </div>
             </div>
         </div>

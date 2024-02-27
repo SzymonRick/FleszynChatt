@@ -10,5 +10,8 @@ namespace FleszynChatt.Classes
         public static Dictionary<int, Chat> Chats { get; set; } = new Dictionary<int, Chat>();
         public static Dictionary<int, string> Connections { get; set; } = new Dictionary<int, string>();
         public static string defaultProfilePicturePath {  get; set; }
+        public static string defaultPassword { get; set; }
+        public static string AdminPasswordhash { get; set;}
+        public static byte[] salt { get; set; }
     }
 }

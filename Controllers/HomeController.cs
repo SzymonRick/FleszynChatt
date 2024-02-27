@@ -40,8 +40,25 @@ namespace FleszynChatt.Controllers
             return View();
         }
 
-        public IActionResult ControlPanel()
+        public IActionResult ControlPanel() { 
+            if(HttpContext.User.Identity.Name == "AdministratorChat")
+            {
+                return View();
+            }
+            return RedirectToAction("Login", "Access");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Privacy(PasswordViewModel viewModel)
         {
+            if(viewModel.Password1 == viewModel.Password2 && viewModel != null) { 
+
+                MySqlConnection connection = Database.ConnectDatabase();
+                Database.SetPasswordUser(connection, HttpContext.User.Identity.Name, viewModel.Password1);
+                return RedirectToAction("Index", "Home");
+            }
+            ViewData["ValidateMessage"] = "*Ró¿ne has³a";
             return View();
         }
 
