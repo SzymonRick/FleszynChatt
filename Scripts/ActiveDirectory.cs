@@ -51,18 +51,6 @@ namespace FleszynChat.Scripts
 
                         // Save profile picture to file (optional)
                         string profilePicturePath = null;
-                        if (profilePictureBytes != null && profilePictureBytes.Length > 0)
-                        {
-                            profilePicturePath = SaveProfilePicture(username, profilePictureBytes);
-                        }
-
-                        // Output user information
-                        Console.WriteLine($"Username: {username}");
-                        Console.WriteLine($"First Name: {firstName}");
-                        Console.WriteLine($"Last Name: {lastName}");
-                        Console.WriteLine($"Email: {email}");
-                        Console.WriteLine($"Profile Picture Path: {profilePicturePath}");
-                        Console.WriteLine();
 
                         MySqlConnection connection = Database.ConnectDatabase();
                         Database.AddUser(connection, username, GlobalData.defaultPassword, email, firstName, lastName, profilePicturePath);
@@ -84,28 +72,6 @@ namespace FleszynChat.Scripts
             else
             {
                 return string.Empty;
-            }
-        }
-
-        static private string SaveProfilePicture(string username, byte[] profilePictureBytes)
-        {
-            string directoryPath = "ProfilePictures"; // Directory to save profile pictures
-            string filePath = Path.Combine(directoryPath, $"{username}.jpg");
-
-            try
-            {
-                // Ensure directory exists
-                Directory.CreateDirectory(directoryPath);
-
-                // Save profile picture to file
-                File.WriteAllBytes(filePath, profilePictureBytes);
-
-                return filePath;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to save profile picture: {ex.Message}");
-                return null;
             }
         }
     }

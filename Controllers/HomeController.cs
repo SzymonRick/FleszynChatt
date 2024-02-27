@@ -29,7 +29,13 @@ namespace FleszynChatt.Controllers
 
         public ActionResult Index()
         {
+
             User user = GlobalData.Users.Values.FirstOrDefault(u => u.Username == HttpContext.User.Identity.Name);
+
+            if (user == null){
+                return View();
+            }
+            
             ChatDataViewModel chatData = new ChatDataViewModel(user.Id);
 
             return View(chatData);
